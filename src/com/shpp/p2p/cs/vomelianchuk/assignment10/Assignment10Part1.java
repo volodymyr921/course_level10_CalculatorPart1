@@ -1,4 +1,4 @@
-package com.shpp.p2p.cs.vomelianchuk.assignment11;
+package com.shpp.p2p.cs.vomelianchuk.assignment10;
 
 import java.util.HashMap;
 
@@ -8,7 +8,7 @@ import java.util.HashMap;
  * The program calculates simple arithmetic expressions,
  * accepts it and returns a value
  */
-public class Assignment11Part1 {
+public class Assignment10Part1 {
     /**
      * Calculates an expression with parameters
      * and outputs the result to the console
@@ -17,24 +17,20 @@ public class Assignment11Part1 {
      */
     public static void main(String[] args) {
         String formula = null;
-
-        FormulaTree formulaTree = parseFormula(args);
-
-        System.out.println(calculate(formulaTree.getFormula()));
-    }
-
-    private static FormulaTree parseFormula(String[] data) {
-        String formulaParse = data[0];
-        formulaParse =formulaParse.replaceAll("\\s", "");
         HashMap<String, Double> variables = new HashMap<>();
-        for (int i = 1; i < data.length; i++) {
-            String variableAndValue = data[i].replaceAll("\\s", "");
-            variables.put(getVariable(variableAndValue), getValue(variableAndValue));
+
+        try {
+            formula = args[0];
+
+            for (int i = 1; i < args.length; i++) {
+                String variableAndValue = args[i].replaceAll("\\s", "");
+                variables.put(getVariable(variableAndValue), getValue(variableAndValue));
+            }
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            System.err.println("Incorrect DATA!");
         }
-        for(String variable : variables.keySet()) {
-            formulaParse = formulaParse.replaceAll(variable,String.valueOf(variables.get(variable)));
-        }
-        return new FormulaTree(formulaParse);
+
+        System.out.println(calculate(formula, variables));
     }
 
     /**
@@ -61,11 +57,17 @@ public class Assignment11Part1 {
      * Evaluates the given expression with its parameters
      *
      * @param formula The formula to be calculated
+     * @param variables Parameters and their values
      * @return The result of the expression when the parameters are substituted
      */
-    private static double calculate(String formula) {
+    private static double calculate(String formula, HashMap<String,Double> variables) {
+        String formulaWithoutSpace = formula.replaceAll("\\s", "");
         try {
-            return  evaluate(formula);
+            // Substitute numbers instead of variables
+            for(String variable : variables.keySet()) {
+                formulaWithoutSpace = formulaWithoutSpace.replaceAll(variable,String.valueOf(variables.get(variable)));
+            }
+            return  evaluate(formulaWithoutSpace);
         } catch (Exception e) {
             System.err.println("Incorrect FORMULA!");
             return Double.NaN;
